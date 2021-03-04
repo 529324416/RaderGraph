@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>自我分析-雷达图生成</title>
+        <meta charset="utf-8">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js"></script>
+    </head>
+
+    <body>
+        <div style="float: left;width: 80%;height: 100%;">
+            <div id="bar" style="width:1000px; height:600px;"></div>
+        </div>
+        <div style="float: left;width: 20%;height: 100%;">
+            <p>
+                给你的各项能力打分，满分为100。
+            </p>
+            <form name="form">
+                <p>策划 &nbsp&nbsp <input type="number" value="0" id="game"></p>
+                <p>程序 &nbsp&nbsp <input type="number" value="10" id="programe"></p>
+                <p>美术 &nbsp&nbsp <input type="number" value="20" id="art"></p>
+                <p>特效 &nbsp&nbsp <input type="number" value="30" id="effects"></p>
+                <p>音乐 &nbsp&nbsp <input type="number" value="40" id="music"></p>
+                <p>剧情 &nbsp&nbsp <input type="number" value="50" id="story"></p>
+                <p>运营 &nbsp&nbsp <input type="number" value="60" id="manage"></p>
+            </form>
+            <button onclick="RenderGraph()">生成雷达图</button>
+        </div>
+        
+        <script>
+            var chart = echarts.init(document.getElementById('bar'), 'white', {renderer: 'canvas'});
+            fetchData(chart);
+
+            function RenderGraph(){
+
+                Mydata = {
+                    "策划":$("#game").val(),
+                    "程序":$("#programe").val(),
+                    "美术":$("#art").val(),
+                    "特效":$("#effects").val(),
+                    "剧情":$("#story").val(),
+                    "音乐":$("#music").val(),
+                    "运营":$("#manage").val()
+                }
+
+                alert(JSON.stringify(Mydata));
+                
+                $.ajax({
+                    contentType: 'application/json',
+                    type:"POST",
+                    url:"/render_graph",
+                    dataType:"json",
+                    data:JSON.stringify(Mydata),
+                    success:function(result){
+                        chart.setOption(result);
+                    }
+                });
+            }
+    
+            function fetchData(chart) {
+                $.ajax({
+                    type: "GET",
+                    url: "http://127.0.0.1:5000/testInterface",
+                    dataType: 'json',
+                    success: function (result) {
+                        chart.setOption(result);
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>
